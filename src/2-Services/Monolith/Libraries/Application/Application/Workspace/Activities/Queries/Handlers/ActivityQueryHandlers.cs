@@ -7,12 +7,12 @@ using TaskoMask.Services.Monolith.Application.Workspace.Activities.Queries.Model
 using TaskoMask.BuildingBlocks.Application.Queries;
 using TaskoMask.BuildingBlocks.Application.Notifications;
 using TaskoMask.Services.Monolith.Domain.DataModel.Data;
-using TaskoMask.BuildingBlocks.Contracts.Dtos.Workspace.Activities;
+using TaskoMask.BuildingBlocks.Contracts.Dtos.Activities;
 
 namespace TaskoMask.Services.Monolith.Application.Workspace.Activities.Queries.Handlers
 {
     public class ActivityQueryHandlers : BaseQueryHandler,
-        IRequestHandler<GetActivitiesByTaskIdQuery, IEnumerable<ActivityBasicInfoDto>>
+        IRequestHandler<GetActivitiesByTaskIdQuery, IEnumerable<GetTaskActivityDto>>
 
     {
 
@@ -25,7 +25,7 @@ namespace TaskoMask.Services.Monolith.Application.Workspace.Activities.Queries.H
 
         #region Ctors
 
-        public ActivityQueryHandlers(IActivityRepository activityRepository,INotificationHandler notifications, IMapper mapper) : base(mapper, notifications)
+        public ActivityQueryHandlers(IActivityRepository activityRepository, IMapper mapper) : base(mapper)
         {
             _activityRepository = activityRepository;
         }
@@ -40,10 +40,10 @@ namespace TaskoMask.Services.Monolith.Application.Workspace.Activities.Queries.H
         /// <summary>
         /// 
         /// </summary>
-        public async Task<IEnumerable<ActivityBasicInfoDto>> Handle(GetActivitiesByTaskIdQuery request, CancellationToken cancellationToken)
+        public async Task<IEnumerable<GetTaskActivityDto>> Handle(GetActivitiesByTaskIdQuery request, CancellationToken cancellationToken)
         {
             var activities = await _activityRepository.GetListByTaskIdAsync(request.TaskId);
-            return _mapper.Map<IEnumerable<ActivityBasicInfoDto>>(activities);
+            return _mapper.Map<IEnumerable<GetTaskActivityDto>>(activities);
         }
 
 

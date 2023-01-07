@@ -1,5 +1,5 @@
-﻿@using TaskoMask.BuildingBlocks.Contracts.Dtos.Workspace.Comments
-@inject TaskoMask.BuildingBlocks.Web.ApiContracts.ICommentApiService CommentApiService
+﻿@using TaskoMask.BuildingBlocks.Contracts.Dtos.Comments
+@inject CommentApiService CommentApiService
 
 <EditForm Model="CommentModel" OnValidSubmit="HandleUpdateComment">
 
@@ -80,7 +80,7 @@
     private async Task PrepareModelToUpdate()
     {
 
-        var commentResult = await CommentApiService.Get(Id);
+        var commentResult = await CommentApiService.GetAsync(Id);
 
         if (commentResult.IsSuccess)
         {
@@ -93,7 +93,7 @@
         }
         else
         {
-            QueryResultHandler<CommentBasicInfoDto>.Init()
+            QueryResultHandler<GetCommentDto>.Init()
                 .WithResult(commentResult)
                 .ShowErrorToast(ToastService)
                 .CloseModal(ModalInstance);
@@ -107,7 +107,7 @@
     /// </summary>
     private async Task HandleUpdateComment()
     {
-        var result = await CommentApiService.Update(Id, CommentModel);
+        var result = await CommentApiService.UpdateAsync(Id, CommentModel);
         CommandResultHandler.Init()
             .WithResult(result)
             .WithComponentMessageType(MessageType.Comment_Updated)
@@ -129,7 +129,7 @@
         if (confirmationModalResult.Cancelled)
             return;
 
-        var result = await CommentApiService.Delete(Id);
+        var result = await CommentApiService.DeleteAsync(Id);
         CommandResultHandler.Init()
             .WithResult(result)
             .WithComponentMessageType(MessageType.Comment_Deleted)

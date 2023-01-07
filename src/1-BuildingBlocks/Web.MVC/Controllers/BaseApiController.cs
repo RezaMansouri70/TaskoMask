@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using TaskoMask.BuildingBlocks.Application.Bus;
 using TaskoMask.BuildingBlocks.Contracts.Services;
 
 namespace TaskoMask.BuildingBlocks.Web.MVC.Controllers
@@ -8,20 +9,30 @@ namespace TaskoMask.BuildingBlocks.Web.MVC.Controllers
         #region Fields
 
         private readonly IAuthenticatedUserService _authenticatedUserService;
+        protected readonly IInMemoryBus _inMemoryBus;
 
         #endregion
 
         #region Ctors
 
 
-        public BaseApiController( )
+        ///TODO delete this ctor after removing monolith service
+        public BaseApiController()
         {
         }
 
 
+        ///TODO delete this ctor after removing monolith service
         public BaseApiController(IAuthenticatedUserService authenticatedUserService)
         {
             _authenticatedUserService = authenticatedUserService;
+        }
+
+
+        public BaseApiController(IAuthenticatedUserService authenticatedUserService, IInMemoryBus inMemoryBus )
+        {
+            _authenticatedUserService = authenticatedUserService;
+            _inMemoryBus = inMemoryBus;
         }
 
 
@@ -29,6 +40,7 @@ namespace TaskoMask.BuildingBlocks.Web.MVC.Controllers
         #endregion
 
         #region Protected Methods
+
 
 
 

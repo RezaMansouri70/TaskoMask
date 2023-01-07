@@ -1,5 +1,5 @@
-﻿@using TaskoMask.BuildingBlocks.Contracts.Dtos.Workspace.Organizations
-@inject TaskoMask.BuildingBlocks.Web.ApiContracts.IOrganizationApiService OrganizationApiService
+﻿@using TaskoMask.BuildingBlocks.Contracts.Dtos.Organizations
+@inject OrganizationApiService OrganizationApiService
 
 <EditForm Model="OrganizationModel" OnValidSubmit="HandAddOrganization">
 
@@ -57,7 +57,7 @@
     /// </summary>
     private async Task HandAddOrganization()
     {
-        var result = await OrganizationApiService.Add(OrganizationModel);
+        var result = await OrganizationApiService.AddAsync(OrganizationModel);
         CommandResultHandler.Init()
             .WithResult(result)
             .WithComponentMessageType(MessageType.Organization_Added)

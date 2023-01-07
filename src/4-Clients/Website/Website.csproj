@@ -5,9 +5,11 @@
 	  <ImplicitUsings>enable</ImplicitUsings>
     <CopyRefAssembliesToPublishDirectory>false</CopyRefAssembliesToPublishDirectory>
     <UserSecretsId>b786f536-e1c4-49fe-9d06-7247aedebda8</UserSecretsId>
-    <DockerDefaultTargetOS>Windows</DockerDefaultTargetOS>
+    <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
     <AssemblyName>TaskoMask.Clients.Website</AssemblyName>
     <RootNamespace>TaskoMask.Clients.Website</RootNamespace>
+    <DockerfileContext>..\..\..</DockerfileContext>
+    <DockerComposeProjectPath>..\..\6-Docker\docker-compose.dcproj</DockerComposeProjectPath>
     
   </PropertyGroup>
 
@@ -22,6 +24,5 @@
   </ItemGroup>
 	<ItemGroup>
 		<ProjectReference Include="..\..\1-BuildingBlocks\Web.MVC\Web.MVC.csproj" />
-		<ProjectReference Include="..\..\2-Services\Monolith\Libraries\Infrastructure\Infrastructure.CrossCutting\Infrastructure.CrossCutting.csproj" />
 	</ItemGroup>
 </Project>

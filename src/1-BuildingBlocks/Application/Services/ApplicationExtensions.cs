@@ -1,5 +1,5 @@
-﻿using MediatR.Pipeline;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
+using System;
 using TaskoMask.BuildingBlocks.Application.Behaviors;
 using TaskoMask.BuildingBlocks.Application.Exceptions;
 using TaskoMask.BuildingBlocks.Application.Notifications;
@@ -12,13 +12,14 @@ namespace TaskoMask.BuildingBlocks.Application.Services
         /// <summary>
         /// 
         /// </summary>
-        public static IServiceCollection AddBuildingBlocksApplicationServices(this IServiceCollection services)
+        public static void AddBuildingBlocksApplication(this IServiceCollection services, Type validatorAssemblyMarkerType)
         {
-            services.AddApplicationBehaviors();
-            services.AddApplicationExceptionsHandler();
-            services.AddDomainNotificationHandler();
+            if (services == null)
+                throw new ArgumentNullException(nameof(services));
 
-            return services;
+            services.AddApplicationExceptionsHandler();
+            services.AddApplicationBehaviors(validatorAssemblyMarkerType);
+            services.AddDomainNotificationHandler();
         }
     }
 }

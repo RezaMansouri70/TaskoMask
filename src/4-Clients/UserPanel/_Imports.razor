@@ -13,17 +13,15 @@
 @using Blazored.Toast.Services
 @using TaskoMask.Clients.UserPanel.Helpers
 @using Blazored.Modal
-@using Blazored.LocalStorage
 @using Blazored.Modal.Services
 @using TaskoMask.BuildingBlocks.Contracts.ViewModels
 @using TaskoMask.BuildingBlocks.Contracts.Helpers
 @using TaskoMask.BuildingBlocks.Contracts.Models
 @using UserPanel
 @using UserPanel.Shared
-
+@using TaskoMask.Clients.UserPanel.Services.API
 @attribute [Authorize]
 @inject IToastService ToastService
-@inject ILocalStorageService LocalStorageService
 @inject IModalService  ModalService
 @inject IComponentMessageService ComponentMessageService
 @inject NavigationManager NavigationManager

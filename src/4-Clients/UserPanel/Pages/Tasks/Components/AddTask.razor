@@ -1,5 +1,6 @@
-﻿@using TaskoMask.BuildingBlocks.Contracts.Dtos.Workspace.Tasks
-@inject TaskoMask.BuildingBlocks.Web.ApiContracts.ITaskApiService TaskApiService
+﻿@using TaskoMask.BuildingBlocks.Contracts.Dtos.Tasks;
+    using TaskoMask.BuildingBlocks.Contracts.Api.Tasks
+@inject TaskApiService TaskApiService
 
 <EditForm Model="TaskModel" OnValidSubmit="HandleAddTask" class="form">
     <DataAnnotationsValidator />
@@ -60,7 +61,7 @@
     /// </summary>
     private async Task HandleAddTask()
     {
-        var result = await TaskApiService.Add(TaskModel);
+        var result = await TaskApiService.AddAsync(TaskModel);
         if (result.IsSuccess)
             TaskModel.Title = "";
 

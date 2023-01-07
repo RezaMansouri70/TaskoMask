@@ -1,5 +1,5 @@
-﻿@using TaskoMask.BuildingBlocks.Contracts.Dtos.Workspace.Owners
-@inject TaskoMask.BuildingBlocks.Web.ApiContracts.IOwnerApiService OwnerApiService
+﻿@using TaskoMask.BuildingBlocks.Contracts.Dtos.Owners
+@inject OwnerApiService OwnerApiService
 
 <EditForm id="user_update_profile_form" Model="OwnerUpdateModel" OnValidSubmit="HandleUpdateOwner">
 
@@ -60,7 +60,7 @@
     /// </summary>
     protected override async Task OnInitializedAsync()
     {
-        var ownerResult = await OwnerApiService.Get();
+        var ownerResult = await OwnerApiService.GetAsync();
 
         if (ownerResult.IsSuccess)
         {
@@ -74,7 +74,7 @@
         }
         else
         {
-            QueryResultHandler<OwnerBasicInfoDto>.Init()
+            QueryResultHandler<GetOwnerDto>.Init()
                 .WithResult(ownerResult)
                 .ShowErrorToast(ToastService)
                 .CloseModal(ModalInstance);
@@ -95,7 +95,7 @@
     /// </summary>
     private async Task HandleUpdateOwner()
     {
-        var result = await OwnerApiService.UpdateProfile(OwnerUpdateModel);
+        var result = await OwnerApiService.UpdateProfileAsync(OwnerUpdateModel);
         CommandResultHandler.Init()
             .WithResult(result)
             .WithComponentMessageType(MessageType.Owner_Updated)

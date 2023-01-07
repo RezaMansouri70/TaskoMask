@@ -4,19 +4,18 @@ using TaskoMask.BuildingBlocks.Web.Services.Http;
 namespace TaskoMask.BuildingBlocks.Web.Configuration
 {
     /// <summary>
-    /// Shared Configuration for Blazor and MVC and WebAPI projects
+    /// Shared Configuration for Web projects (Blazor, MVC and WebAPI)
     /// </summary>
     public static class SharedConfiguration
     {
 
 
+
         /// <summary>
         /// 
         /// </summary>
-        public static void HttpClientService(this IServiceCollection services)
+        public static void AddHttpClientService(this IServiceCollection services)
         {
-            if (services == null) throw new ArgumentNullException(nameof(services));
-
             services.AddScoped<IHttpClientService, HttpClientService>();
         }
 

@@ -1,12 +1,12 @@
 ﻿using System.Collections.Generic;
-using TaskoMask.BuildingBlocks.Contracts.Dtos.Workspace.Boards;
+using TaskoMask.BuildingBlocks.Contracts.Dtos.Boards;
 using TaskoMask.BuildingBlocks.Application.Queries;
 
 
 namespace TaskoMask.Services.Monolith.Application.Workspace.Boards.Queries.Models
 {
    
-    public class GetBoardsByProjectsIdQuery : BaseQuery<IEnumerable<BoardBasicInfoDto>>
+    public class GetBoardsByProjectsIdQuery : BaseQuery<IEnumerable<GetBoardDto>>
     {
         public GetBoardsByProjectsIdQuery(string[] projectsId)
         {

@@ -9,12 +9,12 @@ using TaskoMask.BuildingBlocks.Infrastructure.MongoDB;
 
 namespace TaskoMask.Services.Monolith.Infrastructure.Data.Read.Repositories
 {
-    public class ActivityRepository : BaseRepository<Activity>, IActivityRepository
+    public class ActivityRepository : MongoDbBaseRepository<Activity>, IActivityRepository
     {
         #region Fields
 
         private readonly IMongoCollection<Activity> _activities;
-        private const string activityCollectionName = "Activities";
+        private const string activityCollectionName = nameof(ReadDbContext.Activities);
         #endregion
 
         #region Ctors

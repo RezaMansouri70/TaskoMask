@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using TaskoMask.BuildingBlocks.Application.Commands;
-using TaskoMask.BuildingBlocks.Domain.Events;
+using TaskoMask.BuildingBlocks.Domain.Models;
 using TaskoMask.BuildingBlocks.Domain.Services;
 
 namespace TaskoMask.BuildingBlocks.Application.Behaviors
@@ -18,7 +18,7 @@ namespace TaskoMask.BuildingBlocks.Application.Behaviors
     /// So this notification handler act as a behavior and makes it easy to store events without repeating the creation of event handler
     /// However events can have another handlers to do another things like sending an email or update some other entities
     /// </summary>
-    public class EventStoringBehavior : INotificationHandler<IDomainEvent>
+    public class EventStoringBehavior : INotificationHandler<DomainEvent>
     {
         #region Fields
 
@@ -43,7 +43,7 @@ namespace TaskoMask.BuildingBlocks.Application.Behaviors
         /// <summary>
         /// 
         /// </summary>
-        public async Task Handle(IDomainEvent request, CancellationToken cancellationToken)
+        public async Task Handle(DomainEvent request, CancellationToken cancellationToken)
         {
             await _eventStore.SaveAsync(request);
         }

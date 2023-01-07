@@ -1,6 +1,6 @@
-﻿@using TaskoMask.BuildingBlocks.Contracts.Dtos.Workspace.Projects
-@inject TaskoMask.BuildingBlocks.Web.ApiContracts.IProjectApiService ProjectApiService
-@inject TaskoMask.BuildingBlocks.Web.ApiContracts.IOrganizationApiService OrganizationApiService
+﻿@using TaskoMask.BuildingBlocks.Contracts.Dtos.Projects
+@inject ProjectApiService ProjectApiService
+@inject OrganizationApiService OrganizationApiService
 
 <EditForm Model="ProjectModel" OnValidSubmit="HandleAddProject">
 
@@ -99,7 +99,7 @@
     /// </summary>
     private async Task GetOrganizations()
     {
-        var organizationsResult = await OrganizationApiService.GetSelectListItems();
+        var organizationsResult = await OrganizationApiService.GetSelectListItemsAsync();
         if (!organizationsResult.IsSuccess)
         {
             QueryResultHandler<IEnumerable<SelectListItem>>.Init()
@@ -136,7 +136,7 @@
     /// </summary>
     private async Task HandleAddProject()
     {
-        var result = await ProjectApiService.Add(ProjectModel);
+        var result = await ProjectApiService.AddAsync(ProjectModel);
         CommandResultHandler.Init()
             .WithResult(result)
             .WithComponentMessageType(MessageType.Project_Added)

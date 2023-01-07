@@ -30,7 +30,7 @@ namespace TaskoMask.Services.Monolith.Application.Workspace.Tasks.Commands.Handl
 
         #region Ctors
 
-        public TaskCommandHandlers(ITaskAggregateRepository taskAggregateRepository, IInMemoryBus inMemoryBus, ITaskValidatorService taskValidatorService, IBoardAggregateRepository boardAggregateRepository) : base(inMemoryBus)
+        public TaskCommandHandlers(ITaskAggregateRepository taskAggregateRepository, IMessageBus messageBus, ITaskValidatorService taskValidatorService, IBoardAggregateRepository boardAggregateRepository, IInMemoryBus inMemoryBus) : base(messageBus,inMemoryBus)
         {
             _taskAggregateRepository = taskAggregateRepository;
             _taskValidatorService = taskValidatorService;
@@ -53,7 +53,7 @@ namespace TaskoMask.Services.Monolith.Application.Workspace.Tasks.Commands.Handl
 
             var task = Domain.DomainModel.Workspace.Tasks.Entities.Task.AddTask(request.Title, request.Description, request.CardId, board.Id, _taskValidatorService);
 
-            await _taskAggregateRepository.CreateAsync(task);
+            await _taskAggregateRepository.AddAsync(task);
             await PublishDomainEventsAsync(task.DomainEvents);
 
             return new CommandResult(ContractsMessages.Create_Success, task.Id);

@@ -1,10 +1,10 @@
 ﻿using System.Collections.Generic;
-using TaskoMask.BuildingBlocks.Contracts.Dtos.Workspace.Comments;
+using TaskoMask.BuildingBlocks.Contracts.Dtos.Comments;
 using TaskoMask.BuildingBlocks.Application.Queries;
 
 namespace TaskoMask.Services.Monolith.Application.Workspace.Comments.Queries.Models
 {
-    public class GetCommentsByTaskIdQuery : BaseQuery<IEnumerable<CommentBasicInfoDto>>
+    public class GetCommentsByTaskIdQuery : BaseQuery<IEnumerable<GetCommentDto>>
     {
         public GetCommentsByTaskIdQuery(string taskId)
         {

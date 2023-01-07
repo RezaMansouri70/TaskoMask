@@ -1,19 +1,17 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using TaskoMask.Services.Monolith.Application.Workspace.Boards.Services;
-using TaskoMask.BuildingBlocks.Contracts.Dtos.Workspace.Boards;
-using Microsoft.AspNetCore.Authorization;
+using TaskoMask.BuildingBlocks.Contracts.Dtos.Boards;
 using TaskoMask.BuildingBlocks.Web.MVC.Controllers;
 using TaskoMask.BuildingBlocks.Contracts.Helpers;
 using TaskoMask.BuildingBlocks.Contracts.ViewModels;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using TaskoMask.BuildingBlocks.Web.ApiContracts;
 using TaskoMask.Services.Monolith.Application.Core.Services;
 using TaskoMask.BuildingBlocks.Contracts.Resources;
+using Microsoft.AspNetCore.Authorization;
 
-namespace TaskoMask.Services.Monolith.API.Controllers
+namespace TaskoMask.Services.Monolith.Api.Controllers
 {
-    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-    public class BoardsApiController : BaseApiController, IBoardApiService
+    [Authorize("full-access")]
+    public class BoardsApiController : BaseApiController
     {
         #region Fields
 
@@ -40,10 +38,10 @@ namespace TaskoMask.Services.Monolith.API.Controllers
         /// </summary>
         [HttpGet]
         [Route("boards/{id}")]
-        public async Task<Result<BoardOutputDto>> Get(string id)
+        public async Task<Result<GetBoardDto>> Get(string id)
         {
             if (!await _userAccessManagementService.CanAccessToBoardAsync(id))
-                return Result.Failure<BoardOutputDto>(message: ContractsMessages.Access_Denied);
+                return Result.Failure<GetBoardDto>(message: ContractsMessages.Access_Denied);
 
             return await _boardService.GetByIdAsync(id);
         }

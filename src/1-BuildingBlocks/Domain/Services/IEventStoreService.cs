@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using TaskoMask.BuildingBlocks.Domain.Events;
+using TaskoMask.BuildingBlocks.Domain.Models;
 
 namespace TaskoMask.BuildingBlocks.Domain.Services
 {
@@ -12,12 +12,12 @@ namespace TaskoMask.BuildingBlocks.Domain.Services
         /// <summary>
         /// 
         /// </summary>
-        void Save<TDomainEvent>(TDomainEvent @event) where TDomainEvent : IDomainEvent;
+        void Save<TDomainEvent>(TDomainEvent @event) where TDomainEvent : DomainEvent;
 
         /// <summary>
         /// 
         /// </summary>
-        Task SaveAsync<TDomainEvent>(TDomainEvent @event) where TDomainEvent : IDomainEvent;
+        Task SaveAsync<TDomainEvent>(TDomainEvent @event) where TDomainEvent : DomainEvent;
 
         /// <summary>
         /// 

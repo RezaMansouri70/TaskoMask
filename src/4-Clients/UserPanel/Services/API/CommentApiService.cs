@@ -1,23 +1,20 @@
-﻿using TaskoMask.BuildingBlocks.Contracts.Dtos.Workspace.Comments;
+﻿using TaskoMask.BuildingBlocks.Contracts.Dtos.Comments;
 using TaskoMask.BuildingBlocks.Contracts.Helpers;
-using TaskoMask.BuildingBlocks.Web.ApiContracts;
 using TaskoMask.BuildingBlocks.Web.Services.Http;
 
 namespace TaskoMask.Clients.UserPanel.Services.API
 {
-    public class CommentApiService : ICommentApiService
+    public class CommentApiService : BaseApiService
     {
         #region Fields
 
-        private readonly IHttpClientService _httpClientService;
 
         #endregion
 
         #region Ctor
 
-        public CommentApiService(IHttpClientService httpClientService)
+        public CommentApiService(IHttpClientService httpClientService) : base(httpClientService)
         {
-            _httpClientService = httpClientService;
         }
 
         #endregion
@@ -28,10 +25,10 @@ namespace TaskoMask.Clients.UserPanel.Services.API
         /// <summary>
         /// 
         /// </summary>
-        public async Task<Result<CommentBasicInfoDto>> Get(string id)
+        public async Task<Result<GetCommentDto>> GetAsync(string id)
         {
-            var url = $"/comments/{id}";
-            return await _httpClientService.GetAsync<CommentBasicInfoDto>(url);
+            var url = $"/monolith/comments/{id}";
+            return await _httpClientService.GetAsync<GetCommentDto>(url);
         }
 
 
@@ -39,9 +36,9 @@ namespace TaskoMask.Clients.UserPanel.Services.API
         /// <summary>
         /// 
         /// </summary>
-        public async Task<Result<CommandResult>> Add(AddCommentDto input)
+        public async Task<Result<CommandResult>> AddAsync(AddCommentDto input)
         {
-            var url = $"/comments";
+            var url = $"/monolith/comments";
             return await _httpClientService.PostAsync<CommandResult>(url, input);
         }
 
@@ -50,9 +47,9 @@ namespace TaskoMask.Clients.UserPanel.Services.API
         /// <summary>
         /// 
         /// </summary>
-        public async Task<Result<CommandResult>> Update(string id,UpdateCommentDto input)
+        public async Task<Result<CommandResult>> UpdateAsync(string id,UpdateCommentDto input)
         {
-            var url = $"/comments/{id}";
+            var url = $"/monolith/comments/{id}";
             return await _httpClientService.PutAsync<CommandResult>(url, input);
         }
 
@@ -60,9 +57,9 @@ namespace TaskoMask.Clients.UserPanel.Services.API
         /// <summary>
         /// 
         /// </summary>
-        public async Task<Result<CommandResult>> Delete(string id)
+        public async Task<Result<CommandResult>> DeleteAsync(string id)
         {
-            var url = $"/comments/{id}";
+            var url = $"/monolith/comments/{id}";
             return await _httpClientService.DeleteAsync<CommandResult>(url);
         }
 

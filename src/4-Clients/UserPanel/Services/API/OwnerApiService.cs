@@ -1,25 +1,22 @@
-﻿using TaskoMask.BuildingBlocks.Contracts.Dtos.Workspace.Owners;
+﻿using TaskoMask.BuildingBlocks.Contracts.Dtos.Owners;
 using TaskoMask.BuildingBlocks.Contracts.Helpers;
-using TaskoMask.BuildingBlocks.Contracts.ViewModels;
-using TaskoMask.BuildingBlocks.Web.ApiContracts;
-using TaskoMask.BuildingBlocks.Web.Helpers;
 using TaskoMask.BuildingBlocks.Web.Services.Http;
+using TaskoMask.Clients.UserPanel.Helpers;
 
 namespace TaskoMask.Clients.UserPanel.Services.API
 {
-    public class OwnerApiService : IOwnerApiService
+    public class OwnerApiService : BaseApiService
     {
         #region Fields
 
-        private readonly IHttpClientService _httpClientService;
 
         #endregion
 
         #region Ctor
 
-        public OwnerApiService(IHttpClientService httpClientService)
+        public OwnerApiService(IHttpClientService httpClientService):base(httpClientService)
         {
-            _httpClientService = httpClientService;
+
         }
 
         #endregion
@@ -27,13 +24,14 @@ namespace TaskoMask.Clients.UserPanel.Services.API
         #region Public Methods
 
 
+
         /// <summary>
         /// 
         /// </summary>
-        public async Task<Result<OwnerBasicInfoDto>> Get()
+        public async Task<Result<GetOwnerDto>> GetAsync()
         {
-            var url = $"/owner";
-            return await _httpClientService.GetAsync<OwnerBasicInfoDto>(url);
+            var url = $"/owners-read/owner";
+            return await _httpClientService.GetAsync<GetOwnerDto>(url);
         }
 
 
@@ -41,9 +39,24 @@ namespace TaskoMask.Clients.UserPanel.Services.API
         /// <summary>
         /// 
         /// </summary>
-        public async Task<Result<CommandResult>> UpdateProfile(UpdateOwnerProfileDto input)
+        public async Task<Result<CommandResult>> RegisterAsync(RegisterOwnerDto input)
         {
-            var url = $"/owner";
+            var url = $"/owners-write/owner";
+
+            //because this api is anonymous (see AddHttpServices Method in HostingExtensions class)
+            _httpClientService.SetHttpClient(MagicKey.Public_ApiGateway_Client);
+
+            return await _httpClientService.PostAsync<CommandResult>(url, input);
+        }
+
+
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public async Task<Result<CommandResult>> UpdateProfileAsync(UpdateOwnerProfileDto input)
+        {
+            var url = $"/owners-write/owner";
             return await _httpClientService.PutAsync<CommandResult>(url, input);
         }
 

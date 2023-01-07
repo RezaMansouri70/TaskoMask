@@ -1,4 +1,4 @@
-﻿@using TaskoMask.BuildingBlocks.Contracts.Dtos.Workspace.Boards
+﻿@using TaskoMask.BuildingBlocks.Contracts.Dtos.Boards
 
 @foreach (var item in Model)
 {
@@ -35,7 +35,7 @@
 
 
     [Parameter]
-    public IEnumerable<BoardBasicInfoDto> Model { get; set; }
+    public IEnumerable<GetBoardDto> Model { get; set; }
 
 
     [Parameter]

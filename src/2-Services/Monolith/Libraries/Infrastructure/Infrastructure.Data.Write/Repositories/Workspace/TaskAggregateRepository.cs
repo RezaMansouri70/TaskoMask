@@ -1,13 +1,14 @@
 ﻿using MongoDB.Driver;
 using MongoDB.Driver.Linq;
 using System.Linq;
+using TaskoMask.BuildingBlocks.Infrastructure.MongoDB;
 using TaskoMask.Services.Monolith.Domain.DomainModel.Workspace.Tasks.Data;
 using TaskoMask.Services.Monolith.Domain.DomainModel.Workspace.Tasks.Entities;
 using TaskoMask.Services.Monolith.Infrastructure.Data.Write.DbContext;
 
 namespace TaskoMask.Services.Monolith.Infrastructure.Data.Write.Repositories.Workspace
 {
-    public class TaskAggregateRepository : BaseAggregateRepository<Task>, ITaskAggregateRepository
+    public class TaskAggregateRepository : MongoDbBaseAggregateRepository<Task>, ITaskAggregateRepository
     {
         #region Fields
 

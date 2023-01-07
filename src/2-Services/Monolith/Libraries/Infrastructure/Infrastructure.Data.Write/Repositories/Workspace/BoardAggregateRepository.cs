@@ -4,13 +4,14 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using TaskoMask.BuildingBlocks.Infrastructure.MongoDB;
 using TaskoMask.Services.Monolith.Domain.DomainModel.Workspace.Boards.Data;
 using TaskoMask.Services.Monolith.Domain.DomainModel.Workspace.Boards.Entities;
 using TaskoMask.Services.Monolith.Infrastructure.Data.Write.DbContext;
 
 namespace TaskoMask.Services.Monolith.Infrastructure.Data.Write.Repositories.Workspace
 {
-    public class BoardAggregateRepository : BaseAggregateRepository<Board>, IBoardAggregateRepository
+    public class BoardAggregateRepository : MongoDbBaseAggregateRepository<Board>, IBoardAggregateRepository
     {
         #region Fields
 

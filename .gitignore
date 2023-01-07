@@ -670,3 +670,5 @@ fabric.properties
 *.ncrunchproject
 *.feature.cs
 **/wwwroot/bundled
+ocelot.json
+/src/2-Services/Identity/Api/Identity.Api/keys

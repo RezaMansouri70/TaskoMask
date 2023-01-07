@@ -1,7 +1,7 @@
-﻿@using TaskoMask.BuildingBlocks.Contracts.Dtos.Workspace.Boards
-@inject TaskoMask.BuildingBlocks.Web.ApiContracts.IBoardApiService BoardApiService
-@inject TaskoMask.BuildingBlocks.Web.ApiContracts.IProjectApiService ProjectApiService
-@inject TaskoMask.BuildingBlocks.Web.ApiContracts.IOrganizationApiService OrganizationApiService
+﻿@using TaskoMask.BuildingBlocks.Contracts.Dtos.Boards
+@inject BoardApiService BoardApiService
+@inject ProjectApiService ProjectApiService
+@inject OrganizationApiService OrganizationApiService
 
 <EditForm Model="BoardModel" OnValidSubmit="HandleUpdateBoard">
 
@@ -85,7 +85,7 @@
     private async Task PrepareModelToUpdate()
     {
 
-        var boardResult = await BoardApiService.Get(Id);
+        var boardResult = await BoardApiService.GetAsync(Id);
 
         if (boardResult.IsSuccess)
         {
@@ -98,7 +98,7 @@
         }
         else
         {
-            QueryResultHandler<BoardOutputDto>.Init()
+            QueryResultHandler<GetBoardDto>.Init()
                 .WithResult(boardResult)
                 .ShowErrorToast(ToastService)
                 .CloseModal(ModalInstance);
@@ -112,7 +112,7 @@
     /// </summary>
     private async Task HandleUpdateBoard()
     {
-        var result = await BoardApiService.Update(Id, BoardModel);
+        var result = await BoardApiService.UpdateAsync(Id, BoardModel);
         CommandResultHandler.Init()
             .WithResult(result)
             .WithComponentMessageType(MessageType.Board_Updated)
@@ -134,7 +134,7 @@
         if (confirmationModalResult.Cancelled)
             return;
 
-        var result = await BoardApiService.Delete(Id);
+        var result = await BoardApiService.DeleteAsync(Id);
         CommandResultHandler.Init()
             .WithResult(result)
             .WithComponentMessageType(MessageType.Board_Deleted)

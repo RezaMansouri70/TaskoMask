@@ -1,19 +1,17 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using TaskoMask.Services.Monolith.Application.Workspace.Cards.Services;
-using TaskoMask.BuildingBlocks.Contracts.Dtos.Workspace.Cards;
-using Microsoft.AspNetCore.Authorization;
+using TaskoMask.BuildingBlocks.Contracts.Dtos.Cards;
 using TaskoMask.BuildingBlocks.Web.MVC.Controllers;
 using TaskoMask.BuildingBlocks.Contracts.Helpers;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using TaskoMask.BuildingBlocks.Web.ApiContracts;
 using TaskoMask.Services.Monolith.Application.Core.Services;
 using TaskoMask.BuildingBlocks.Contracts.Resources;
 using TaskoMask.BuildingBlocks.Contracts.Models;
+using Microsoft.AspNetCore.Authorization;
 
-namespace TaskoMask.Services.Monolith.API.Controllers
+namespace TaskoMask.Services.Monolith.Api.Controllers
 {
-    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-    public class CardsApiController : BaseApiController, ICardApiService
+    [Authorize("full-access")]
+    public class CardsApiController : BaseApiController
     {
         #region Fields
 
@@ -42,10 +40,10 @@ namespace TaskoMask.Services.Monolith.API.Controllers
         /// </summary>
         [HttpGet]
         [Route("cards/{id}")]
-        public async Task<Result<CardBasicInfoDto>> Get(string id)
+        public async Task<Result<GetCardDto>> Get(string id)
         {
             if (!await _userAccessManagementService.CanAccessToCardAsync(id))
-                return Result.Failure<CardBasicInfoDto>(message: ContractsMessages.Access_Denied);
+                return Result.Failure<GetCardDto>(message: ContractsMessages.Access_Denied);
 
             return await _cardService.GetByIdAsync(id);
         }

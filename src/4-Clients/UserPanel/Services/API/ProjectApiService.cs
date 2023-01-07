@@ -1,26 +1,22 @@
-﻿using TaskoMask.BuildingBlocks.Contracts.Dtos.Workspace.Projects;
+﻿using TaskoMask.BuildingBlocks.Contracts.Dtos.Projects;
 using TaskoMask.BuildingBlocks.Contracts.Helpers;
 using TaskoMask.BuildingBlocks.Contracts.ViewModels;
-using TaskoMask.BuildingBlocks.Web.ApiContracts;
-using TaskoMask.BuildingBlocks.Web.Helpers;
 using TaskoMask.BuildingBlocks.Web.Services.Http;
 using TaskoMask.BuildingBlocks.Contracts.Models;
 
 namespace TaskoMask.Clients.UserPanel.Services.API
 {
-    public class ProjectApiService : IProjectApiService
+    public class ProjectApiService : BaseApiService
     {
         #region Fields
 
-        private readonly IHttpClientService _httpClientService;
 
         #endregion
 
         #region Ctor
 
-        public ProjectApiService(IHttpClientService httpClientService)
+        public ProjectApiService(IHttpClientService httpClientService) : base(httpClientService)
         {
-            _httpClientService = httpClientService;
         }
 
         #endregion
@@ -31,10 +27,10 @@ namespace TaskoMask.Clients.UserPanel.Services.API
         /// <summary>
         /// 
         /// </summary>
-        public async Task<Result<ProjectOutputDto>> Get(string id)
+        public async Task<Result<GetProjectDto>> GetAsync(string id)
         {
-            var url = $"/projects/{id}";
-            return await _httpClientService.GetAsync<ProjectOutputDto>(url);
+            var url = $"/owners-read/projects/{id}";
+            return await _httpClientService.GetAsync<GetProjectDto>(url);
         }
 
 
@@ -43,9 +39,9 @@ namespace TaskoMask.Clients.UserPanel.Services.API
         /// <summary>
         /// 
         /// </summary>
-        public async Task<Result<ProjectDetailsViewModel>> GetDetails(string id)
+        public async Task<Result<ProjectDetailsViewModel>> GetDetailsAsync(string id)
         {
-            var url = $"/projects/{id}/details";
+            var url = $"/aggregator/projects/{id}";
             return await _httpClientService.GetAsync<ProjectDetailsViewModel>(url);
         }
 
@@ -54,10 +50,15 @@ namespace TaskoMask.Clients.UserPanel.Services.API
         /// <summary>
         /// 
         /// </summary>
-        public async Task<Result<IEnumerable<SelectListItem>>> GetSelectListItems(string organizationId)
+        public async Task<Result<IEnumerable<SelectListItem>>> GetSelectListItemsAsync(string organizationId)
         {
-            var url = $"/projects/getSelectListItems/{organizationId}";
-            return await _httpClientService.GetAsync<IEnumerable<SelectListItem>>(url);
+            var url = $"/owners-read/organizations/{organizationId}/projects";
+            var projectsResult = await _httpClientService.GetAsync<IEnumerable<GetProjectDto>>(url);
+            if (!projectsResult.IsSuccess)
+                return Result.Failure<IEnumerable<SelectListItem>>(projectsResult.Errors, projectsResult.Message);
+
+            var selectListItems = MapToSelectListItem(projectsResult.Value);
+            return Result.Success(selectListItems);
         }
 
 
@@ -65,9 +66,9 @@ namespace TaskoMask.Clients.UserPanel.Services.API
         /// <summary>
         /// 
         /// </summary>
-        public async Task<Result<CommandResult>> Add(AddProjectDto input)
+        public async Task<Result<CommandResult>> AddAsync(AddProjectDto input)
         {
-            var url = $"/projects";
+            var url = $"/owners-write/projects";
             return await _httpClientService.PostAsync<CommandResult>(url, input);
         }
 
@@ -76,9 +77,9 @@ namespace TaskoMask.Clients.UserPanel.Services.API
         /// <summary>
         /// 
         /// </summary>
-        public async Task<Result<CommandResult>> Update(string id, UpdateProjectDto input)
+        public async Task<Result<CommandResult>> UpdateAsync(string id, UpdateProjectDto input)
         {
-            var url = $"/projects/{id}";
+            var url = $"/owners-write/projects/{id}";
             return await _httpClientService.PutAsync<CommandResult>(url, input);
         }
 
@@ -87,15 +88,36 @@ namespace TaskoMask.Clients.UserPanel.Services.API
         /// <summary>
         /// 
         /// </summary>
-        public async Task<Result<CommandResult>> Delete(string id)
+        public async Task<Result<CommandResult>> DeleteAsync(string id)
         {
-            var url = $"/projects/{id}";
+            var url = $"/owners-write/projects/{id}";
             return await _httpClientService.DeleteAsync<CommandResult>(url);
         }
 
         #endregion
 
         #region Private Methods
+
+
+
+        /// <summary>
+        /// 
+        /// </summary>
+        private IEnumerable<SelectListItem> MapToSelectListItem(IEnumerable<GetProjectDto> projects)
+        {
+            var items = new List<SelectListItem>();
+            foreach (var item in projects)
+            {
+                items.Add(new SelectListItem
+                {
+                    Text = item.Name,
+                    Value = item.Id
+                });
+            }
+
+            return items;
+        }
+
 
 
 

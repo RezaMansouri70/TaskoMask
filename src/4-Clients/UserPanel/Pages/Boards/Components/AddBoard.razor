@@ -1,8 +1,8 @@
-﻿@using TaskoMask.BuildingBlocks.Contracts.Dtos.Workspace.Boards
-@using TaskoMask.BuildingBlocks.Contracts.Dtos.Workspace.Projects
-@inject TaskoMask.BuildingBlocks.Web.ApiContracts.IBoardApiService BoardApiService
-@inject TaskoMask.BuildingBlocks.Web.ApiContracts.IProjectApiService ProjectApiService
-@inject TaskoMask.BuildingBlocks.Web.ApiContracts.IOrganizationApiService OrganizationApiService
+﻿@using TaskoMask.BuildingBlocks.Contracts.Dtos.Boards
+@using TaskoMask.BuildingBlocks.Contracts.Dtos.Projects
+@inject BoardApiService BoardApiService
+@inject ProjectApiService ProjectApiService
+@inject OrganizationApiService OrganizationApiService
 
 <EditForm Model="BoardModel" OnValidSubmit="HandleAddBoard">
 
@@ -139,7 +139,7 @@
     /// </summary>
     private async Task GetOrganizations()
     {
-        var organizationsResult = await OrganizationApiService.GetSelectListItems();
+        var organizationsResult = await OrganizationApiService.GetSelectListItemsAsync();
         if (!organizationsResult.IsSuccess)
         {
             QueryResultHandler<IEnumerable<SelectListItem>>.Init()
@@ -165,7 +165,7 @@
         if (string.IsNullOrEmpty(selectedOrganizationId))
             selectedOrganizationId = organizationsSelectList.First().Value;
 
-        var projectsResult = await ProjectApiService.GetSelectListItems(selectedOrganizationId);
+        var projectsResult = await ProjectApiService.GetSelectListItemsAsync(selectedOrganizationId);
         if (!projectsResult.IsSuccess)
         {
             QueryResultHandler<IEnumerable<SelectListItem>>.Init()
@@ -202,14 +202,14 @@
             selectedOrganizationId = OrganizationId;
         else if (!string.IsNullOrEmpty(ProjectId))
         {
-            var projectResult = await ProjectApiService.Get(ProjectId);
+            var projectResult = await ProjectApiService.GetAsync(ProjectId);
             if (projectResult.IsSuccess)
             {
                 selectedOrganizationId = projectResult.Value.OrganizationId;
             }
             else
             {
-                QueryResultHandler<ProjectOutputDto>.Init()
+                QueryResultHandler<GetProjectDto>.Init()
                     .WithResult(projectResult)
                     .ShowErrorToast(ToastService)
                     .CloseModal(ModalInstance);
@@ -225,7 +225,7 @@
     /// </summary>
     private async Task HandleAddBoard()
     {
-        var result = await BoardApiService.Add(BoardModel);
+        var result = await BoardApiService.AddAsync(BoardModel);
         CommandResultHandler.Init()
             .WithResult(result)
             .WithComponentMessageType(MessageType.Board_Added)

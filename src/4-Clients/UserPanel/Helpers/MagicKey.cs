@@ -2,7 +2,9 @@
 {
     public static class MagicKey
     {
-        public static readonly string Jwt_Token = "JWT_TOKEN";
-        public static readonly string Authenticated_User = "Authenticated_User";
+        //For Authorized APIs
+        public const string Protected_ApiGateway_Client = "ApiGateway-Protected";
+        ////For Anonymous APIs
+        public const string Public_ApiGateway_Client = "ApiGateway-Public";
     }
 }

@@ -1,6 +1,6 @@
-﻿@using TaskoMask.BuildingBlocks.Contracts.Dtos.Workspace.Projects
-@inject TaskoMask.BuildingBlocks.Web.ApiContracts.IProjectApiService ProjectApiService
-@inject TaskoMask.BuildingBlocks.Web.ApiContracts.IOrganizationApiService OrganizationApiService
+﻿@using TaskoMask.BuildingBlocks.Contracts.Dtos.Projects
+@inject ProjectApiService ProjectApiService
+@inject OrganizationApiService OrganizationApiService
 
 <EditForm Model="ProjectModel" OnValidSubmit="HandleUpdateProject">
 
@@ -83,7 +83,7 @@
     private async Task PrepareModelToUpdate()
     {
   
-        var projectResult = await ProjectApiService.Get(Id);
+        var projectResult = await ProjectApiService.GetAsync(Id);
 
         if (projectResult.IsSuccess)
         {
@@ -96,7 +96,7 @@
         }
         else
         {
-            QueryResultHandler<ProjectOutputDto>.Init()
+            QueryResultHandler<GetProjectDto>.Init()
                 .WithResult(projectResult)
                 .ShowErrorToast(ToastService)
                 .CloseModal(ModalInstance);
@@ -110,7 +110,7 @@
     /// </summary>
     private async Task HandleUpdateProject()
     {
-        var result = await ProjectApiService.Update(Id, ProjectModel);
+        var result = await ProjectApiService.UpdateAsync(Id, ProjectModel);
         CommandResultHandler.Init()
             .WithResult(result)
             .WithComponentMessageType(MessageType.Project_Updated)
@@ -132,7 +132,7 @@
         if (confirmationModalResult.Cancelled)
             return;
 
-        var result = await ProjectApiService.Delete(Id);
+        var result = await ProjectApiService.DeleteAsync(Id);
         CommandResultHandler.Init()
             .WithResult(result)
             .WithComponentMessageType(MessageType.Project_Deleted)

@@ -1,11 +1,9 @@
-﻿using AutoMapper;
-using TaskoMask.BuildingBlocks.Contracts.Helpers;
+﻿using TaskoMask.BuildingBlocks.Contracts.Helpers;
 using System.Threading.Tasks;
 using TaskoMask.Services.Monolith.Application.Workspace.Tasks.Commands.Models;
 using TaskoMask.Services.Monolith.Application.Workspace.Tasks.Queries.Models;
-using TaskoMask.BuildingBlocks.Contracts.Dtos.Workspace.Tasks;
+using TaskoMask.BuildingBlocks.Contracts.Dtos.Tasks;
 using System.Collections.Generic;
-using TaskoMask.BuildingBlocks.Application.Notifications;
 using TaskoMask.BuildingBlocks.Application.Bus;
 using TaskoMask.BuildingBlocks.Contracts.ViewModels;
 using TaskoMask.Services.Monolith.Application.Workspace.Cards.Queries.Models;
@@ -27,7 +25,7 @@ namespace TaskoMask.Services.Monolith.Application.Workspace.Tasks.Services
 
         #region Ctors
 
-        public TaskService(IInMemoryBus inMemoryBus, IMapper mapper, INotificationHandler notifications, IActivityService activityService, ICommentService commentService) : base(inMemoryBus, mapper, notifications)
+        public TaskService(IInMemoryBus inMemoryBus, IActivityService activityService, ICommentService commentService) : base(inMemoryBus)
         {
             _activityService = activityService;
             _commentService = commentService;
@@ -46,7 +44,7 @@ namespace TaskoMask.Services.Monolith.Application.Workspace.Tasks.Services
         public async Task<Result<CommandResult>> AddAsync(AddTaskDto input)
         {
             var cmd = new AddTaskCommand( title: input.Title, cardId: input.CardId, description: input.Description);
-            return await SendCommandAsync(cmd);
+            return await _inMemoryBus.SendCommand(cmd);
         }
 
 
@@ -57,7 +55,7 @@ namespace TaskoMask.Services.Monolith.Application.Workspace.Tasks.Services
         public async Task<Result<CommandResult>> UpdateAsync(UpdateTaskDto input)
         {
             var cmd = new UpdateTaskCommand(id: input.Id, title: input.Title, description: input.Description);
-            return await SendCommandAsync(cmd);
+            return await _inMemoryBus.SendCommand(cmd);
         }
 
 
@@ -68,7 +66,7 @@ namespace TaskoMask.Services.Monolith.Application.Workspace.Tasks.Services
         public async Task<Result<CommandResult>> MoveTaskToAnotherCardAsync(string taskId, string cardId)
         {
             var cmd = new MoveTaskToAnotherCardCommand(taskId, cardId);
-            return await SendCommandAsync(cmd);
+            return await _inMemoryBus.SendCommand(cmd);
         }
 
 
@@ -76,9 +74,9 @@ namespace TaskoMask.Services.Monolith.Application.Workspace.Tasks.Services
         /// <summary>
         /// 
         /// </summary>
-        public async Task<Result<TaskBasicInfoDto>> GetByIdAsync(string id)
+        public async Task<Result<GetTaskDto>> GetByIdAsync(string id)
         {
-            return await SendQueryAsync(new GetTaskByIdQuery(id));
+            return await _inMemoryBus.SendQuery(new GetTaskByIdQuery(id));
         }
 
 
@@ -96,7 +94,7 @@ namespace TaskoMask.Services.Monolith.Application.Workspace.Tasks.Services
                 return Result.Failure<TaskDetailsViewModel>(taskQueryResult.Errors);
 
 
-            var cardQueryResult = await SendQueryAsync(new GetCardByIdQuery(taskQueryResult.Value.CardId));
+            var cardQueryResult = await _inMemoryBus.SendQuery(new GetCardByIdQuery(taskQueryResult.Value.CardId));
             if (!cardQueryResult.IsSuccess)
                 return Result.Failure<TaskDetailsViewModel>(cardQueryResult.Errors);
 
@@ -129,9 +127,9 @@ namespace TaskoMask.Services.Monolith.Application.Workspace.Tasks.Services
         /// <summary>
         /// 
         /// </summary>
-        public async Task<Result<IEnumerable<TaskBasicInfoDto>>> GetListByCardIdAsync(string cardId)
+        public async Task<Result<IEnumerable<GetTaskDto>>> GetListByCardIdAsync(string cardId)
         {
-            return await SendQueryAsync(new GetTasksByCardIdQuery(cardId));
+            return await _inMemoryBus.SendQuery(new GetTasksByCardIdQuery(cardId));
         }
 
 
@@ -140,9 +138,9 @@ namespace TaskoMask.Services.Monolith.Application.Workspace.Tasks.Services
         /// <summary>
         /// 
         /// </summary>
-        public async Task<Result<PaginatedList<TaskOutputDto>>> SearchAsync(int page, int recordsPerPage, string term)
+        public async Task<Result<PaginatedList<GetTaskDto>>> SearchAsync(int page, int recordsPerPage, string term)
         {
-            return await SendQueryAsync(new SearchTasksQuery(page, recordsPerPage, term));
+            return await _inMemoryBus.SendQuery(new SearchTasksQuery(page, recordsPerPage, term));
         }
 
 
@@ -152,7 +150,7 @@ namespace TaskoMask.Services.Monolith.Application.Workspace.Tasks.Services
         /// </summary>
         public async Task<Result<long>> CountAsync()
         {
-            return await SendQueryAsync(new GetTasksCountQuery());
+            return await _inMemoryBus.SendQuery(new GetTasksCountQuery());
         }
 
 
@@ -163,7 +161,7 @@ namespace TaskoMask.Services.Monolith.Application.Workspace.Tasks.Services
         public async Task<Result<CommandResult>> DeleteAsync(string id)
         {
             var cmd = new DeleteTaskCommand(id);
-            return await SendCommandAsync(cmd);
+            return await _inMemoryBus.SendCommand(cmd);
         }
 
 

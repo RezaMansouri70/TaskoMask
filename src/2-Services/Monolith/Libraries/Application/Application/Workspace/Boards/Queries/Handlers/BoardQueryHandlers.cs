@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using TaskoMask.Services.Monolith.Application.Workspace.Boards.Queries.Models;
-using TaskoMask.BuildingBlocks.Contracts.Dtos.Workspace.Boards;
+using TaskoMask.BuildingBlocks.Contracts.Dtos.Boards;
 using TaskoMask.BuildingBlocks.Application.Exceptions;
 using TaskoMask.BuildingBlocks.Application.Queries;
 using TaskoMask.BuildingBlocks.Contracts.Resources;
@@ -18,10 +18,9 @@ using TaskoMask.BuildingBlocks.Contracts.Models;
 namespace TaskoMask.Services.Monolith.Application.Workspace.Boards.Queries.Handlers
 {
     public class BoardQueryHandlers : BaseQueryHandler,
-        IRequestHandler<GetBoardByIdQuery, BoardOutputDto>,
-        IRequestHandler<GetBoardsByProjectIdQuery, IEnumerable<BoardBasicInfoDto>>,
-        IRequestHandler<GetBoardsByProjectsIdQuery, IEnumerable<BoardBasicInfoDto>>,
-        IRequestHandler<SearchBoardsQuery, PaginatedList<BoardOutputDto>>,
+        IRequestHandler<GetBoardByIdQuery, GetBoardDto>,
+        IRequestHandler<GetBoardsByProjectIdQuery, IEnumerable<GetBoardDto>>,
+        IRequestHandler<GetBoardsByProjectsIdQuery, IEnumerable<GetBoardDto>>,
         IRequestHandler<GetBoardsCountQuery, long>
         
 
@@ -31,20 +30,16 @@ namespace TaskoMask.Services.Monolith.Application.Workspace.Boards.Queries.Handl
 
         private readonly IBoardRepository _boardRepository;
         private readonly ICardRepository _cardRepository;
-        private readonly IProjectRepository _projectRepository;
-        private readonly IOrganizationRepository _organizationRepository;
 
         #endregion
 
         #region Ctors
 
 
-        public BoardQueryHandlers(IBoardRepository boardRepository, INotificationHandler notifications, IMapper mapper, IProjectRepository projectRepository, ICardRepository cardRepository, IOrganizationRepository organizationRepository) : base(mapper, notifications)
+        public BoardQueryHandlers(IBoardRepository boardRepository , IMapper mapper, ICardRepository cardRepository) : base(mapper)
         {
             _boardRepository = boardRepository;
-            _projectRepository = projectRepository;
             _cardRepository = cardRepository;
-            _organizationRepository = organizationRepository;
         }
 
 
@@ -56,19 +51,19 @@ namespace TaskoMask.Services.Monolith.Application.Workspace.Boards.Queries.Handl
         /// <summary>
         /// 
         /// </summary>
-        public async Task<BoardOutputDto> Handle(GetBoardByIdQuery request, CancellationToken cancellationToken)
+        public async Task<GetBoardDto> Handle(GetBoardByIdQuery request, CancellationToken cancellationToken)
         {
             var board = await _boardRepository.GetByIdAsync(request.Id);
             if (board == null)
                 throw new ApplicationException(ContractsMessages.Data_Not_exist, DomainMetadata.Board);
 
-            //TODO refactore read model for board to decrease db queries
-            var project = await _projectRepository.GetByIdAsync(board.ProjectId);
-            var organization = await _organizationRepository.GetByIdAsync(project.OrganizationId);
+            //TODO get project and organization data from owner read service
+           // var project = await _projectRepository.GetByIdAsync(board.ProjectId);
+           // var organization = await _organizationRepository.GetByIdAsync(project.OrganizationId);
          
-            var dto= _mapper.Map<BoardOutputDto>(board);
-            dto.ProjectName = project.Name;
-            dto.OrganizationName = organization.Name;
+            var dto= _mapper.Map<GetBoardDto>(board);
+           // dto.ProjectName = project.Name;
+           // dto.OrganizationName = organization.Name;
 
             return dto;
         }
@@ -78,10 +73,10 @@ namespace TaskoMask.Services.Monolith.Application.Workspace.Boards.Queries.Handl
         /// <summary>
         /// 
         /// </summary>
-        public async Task<IEnumerable<BoardBasicInfoDto>> Handle(GetBoardsByProjectIdQuery request, CancellationToken cancellationToken)
+        public async Task<IEnumerable<GetBoardDto>> Handle(GetBoardsByProjectIdQuery request, CancellationToken cancellationToken)
         {
             var boards = await _boardRepository.GetListByProjectIdAsync(request.ProjectId);
-            return _mapper.Map<IEnumerable<BoardBasicInfoDto>>(boards);
+            return _mapper.Map<IEnumerable<GetBoardDto>>(boards);
         }
 
         
@@ -90,36 +85,10 @@ namespace TaskoMask.Services.Monolith.Application.Workspace.Boards.Queries.Handl
         /// <summary>
         /// 
         /// </summary>
-        public async Task<IEnumerable<BoardBasicInfoDto>> Handle(GetBoardsByProjectsIdQuery request, CancellationToken cancellationToken)
+        public async Task<IEnumerable<GetBoardDto>> Handle(GetBoardsByProjectsIdQuery request, CancellationToken cancellationToken)
         {
             var boards = await _boardRepository.GetListByProjectsIdAsync(request.ProjectsId);
-            return _mapper.Map<IEnumerable<BoardBasicInfoDto>>(boards);
-        }
-
-
-        /// <summary>
-        /// 
-        /// </summary>
-        public async Task<PaginatedList<BoardOutputDto>> Handle(SearchBoardsQuery request, CancellationToken cancellationToken)
-        {
-            var boards = _boardRepository.Search(request.Page, request.RecordsPerPage, request.Term, out var pageNumber, out var totalCount);
-            var boardsDto = _mapper.Map<IEnumerable<BoardOutputDto>>(boards);
-
-            foreach (var item in boardsDto)
-            {
-                //TODO refactore read model for board to decrease db queries
-                var project = await _projectRepository.GetByIdAsync(item.ProjectId);
-                var organization = await _organizationRepository.GetByIdAsync(project.OrganizationId);
-                item.ProjectName = project.Name;
-                item.OrganizationName = organization.Name;
-            }
-
-            return new PaginatedList<BoardOutputDto>
-            {
-                TotalCount = totalCount,
-                PageNumber = pageNumber,
-                Items = boardsDto
-            };
+            return _mapper.Map<IEnumerable<GetBoardDto>>(boards);
         }
 
 

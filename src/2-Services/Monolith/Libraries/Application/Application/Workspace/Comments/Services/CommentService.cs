@@ -1,10 +1,8 @@
-﻿using AutoMapper;
-using TaskoMask.BuildingBlocks.Contracts.Helpers;
+﻿using TaskoMask.BuildingBlocks.Contracts.Helpers;
 using System.Threading.Tasks;
 using TaskoMask.Services.Monolith.Application.Workspace.Comments.Commands.Models;
 using TaskoMask.Services.Monolith.Application.Workspace.Comments.Queries.Models;
-using TaskoMask.BuildingBlocks.Contracts.Dtos.Workspace.Comments;
-using TaskoMask.BuildingBlocks.Application.Notifications;
+using TaskoMask.BuildingBlocks.Contracts.Dtos.Comments;
 using TaskoMask.BuildingBlocks.Application.Bus;
 using System.Collections.Generic;
 using TaskoMask.BuildingBlocks.Application.Services;
@@ -20,7 +18,7 @@ namespace TaskoMask.Services.Monolith.Application.Workspace.Comments.Services
 
         #region Ctors
 
-        public CommentService(IInMemoryBus inMemoryBus, IMapper mapper, INotificationHandler notifications) : base(inMemoryBus, mapper, notifications)
+        public CommentService(IInMemoryBus inMemoryBus) : base(inMemoryBus)
         {
         }
 
@@ -34,9 +32,9 @@ namespace TaskoMask.Services.Monolith.Application.Workspace.Comments.Services
         /// <summary>
         /// 
         /// </summary>
-        public async Task<Result<CommentBasicInfoDto>> GetByIdAsync(string id)
+        public async Task<Result<GetCommentDto>> GetByIdAsync(string id)
         {
-            return await SendQueryAsync(new GetCommentByIdQuery(id));
+            return await _inMemoryBus.SendQuery(new GetCommentByIdQuery(id));
         }
 
 
@@ -44,9 +42,9 @@ namespace TaskoMask.Services.Monolith.Application.Workspace.Comments.Services
         /// <summary>
         /// 
         /// </summary>
-        public async Task<Result<IEnumerable<CommentBasicInfoDto>>> GetListByTaskIdAsync(string taskId)
+        public async Task<Result<IEnumerable<GetCommentDto>>> GetListByTaskIdAsync(string taskId)
         {
-            return await SendQueryAsync(new GetCommentsByTaskIdQuery(taskId));
+            return await _inMemoryBus.SendQuery(new GetCommentsByTaskIdQuery(taskId));
         }
 
 
@@ -57,7 +55,7 @@ namespace TaskoMask.Services.Monolith.Application.Workspace.Comments.Services
         public async Task<Result<CommandResult>> AddAsync(AddCommentDto input)
         {
             var cmd = new AddCommentCommand(taskId: input.TaskId, content: input.Content);
-            return await SendCommandAsync(cmd);
+            return await _inMemoryBus.SendCommand(cmd);
         }
 
 
@@ -68,7 +66,7 @@ namespace TaskoMask.Services.Monolith.Application.Workspace.Comments.Services
         public async Task<Result<CommandResult>> UpdateAsync(UpdateCommentDto input)
         {
             var cmd = new UpdateCommentCommand(id: input.Id, content: input.Content);
-            return await SendCommandAsync(cmd);
+            return await _inMemoryBus.SendCommand(cmd);
         }
 
 
@@ -79,7 +77,7 @@ namespace TaskoMask.Services.Monolith.Application.Workspace.Comments.Services
         public async Task<Result<CommandResult>> DeleteAsync(string id)
         {
             var cmd = new DeleteCommentCommand(id);
-            return await SendCommandAsync(cmd);
+            return await _inMemoryBus.SendCommand(cmd);
         }
 
 

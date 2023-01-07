@@ -1,19 +1,17 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using TaskoMask.Services.Monolith.Application.Workspace.Tasks.Services;
-using TaskoMask.BuildingBlocks.Contracts.Dtos.Workspace.Tasks;
-using Microsoft.AspNetCore.Authorization;
+using TaskoMask.BuildingBlocks.Contracts.Dtos.Tasks;
 using TaskoMask.BuildingBlocks.Web.MVC.Controllers;
 using TaskoMask.BuildingBlocks.Contracts.Helpers;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using TaskoMask.BuildingBlocks.Web.ApiContracts;
 using TaskoMask.BuildingBlocks.Contracts.ViewModels;
 using TaskoMask.Services.Monolith.Application.Core.Services;
 using TaskoMask.BuildingBlocks.Contracts.Resources;
+using Microsoft.AspNetCore.Authorization;
 
-namespace TaskoMask.Services.Monolith.API.Controllers
+namespace TaskoMask.Services.Monolith.Api.Controllers
 {
-    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-    public class TasksApiController : BaseApiController, ITaskApiService
+    [Authorize("full-access")]
+    public class TasksApiController : BaseApiController
     {
         #region Fields
 
@@ -42,10 +40,10 @@ namespace TaskoMask.Services.Monolith.API.Controllers
         /// </summary>
         [HttpGet]
         [Route("tasks/{id}")]
-        public async Task<Result<TaskBasicInfoDto>> Get(string id)
+        public async Task<Result<GetTaskDto>> Get(string id)
         {
             if (!await _userAccessManagementService.CanAccessToTaskAsync(id))
-                return Result.Failure<TaskBasicInfoDto>(message: ContractsMessages.Access_Denied);
+                return Result.Failure<GetTaskDto>(message: ContractsMessages.Access_Denied);
 
             return await _taskService.GetByIdAsync(id);
         }

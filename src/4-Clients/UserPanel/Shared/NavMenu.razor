@@ -1,6 +1,9 @@
-﻿@using TaskoMask.BuildingBlocks.Contracts.Dtos.Workspace.Owners
+﻿@using Microsoft.AspNetCore.Components.WebAssembly.Authentication
+@using TaskoMask.BuildingBlocks.Contracts.Dtos.Owners
 @inject Microsoft.Extensions.Configuration.IConfiguration Configuration
-@inject TaskoMask.BuildingBlocks.Web.ApiContracts.IOwnerApiService OwnerApiService
+@inject OwnerApiService OwnerApiService
+@inject NavigationManager Navigation
+@inject SignOutSessionStateManager SignOutManager
 @implements IDisposable
 
 <nav style="justify-content:normal !important; display:block; z-index:99;" class="navbar navbar-dark bg-dark fixed-top">
@@ -43,9 +46,9 @@
             <div class="float-right">
                 <a class="m-md-1 m-lg-1 btn btn-sm btn-warning" id="update_user_profile" @onclick="@(() => ModalService.Show<Pages.Owner.Components.UpdateOwner>("Update Profile", new ModalOptions { Class="blazored-modal w-75 w-md-50 bg-light-gray"}))">
                     <i class="bi bi-person-circle"></i>
-                    @(userDisplayName.Length<6?userDisplayName: userDisplayName.Substring(0, 5) + "...")
+                    @(userDisplayName.Length < 6 ? userDisplayName : userDisplayName.Substring(0, 5) + "...")
                 </a>
-                <a class="m-md-1 m-lg-1 btn btn-sm btn-danger" href="/logout">
+                <a class="m-md-1 m-lg-1 btn btn-sm btn-danger" @onclick="BeginSignOut">
                     <i class="bi bi-power"></i>
                 </a>
 
@@ -53,8 +56,11 @@
         </Authorized>
         <NotAuthorized>
             <div class="float-right">
-                <a class="m-md-1 m-lg-1 btn btn-sm btn-success" href="/login">
+                <a class="m-md-1 m-lg-1 btn btn-sm btn-success" href="authentication/login">
                     login
+                </a>
+                <a class="m-md-1 m-lg-1 btn btn-sm btn-primary" href="register">
+                    register
                 </a>
             </div>
         </NotAuthorized>
@@ -62,8 +68,14 @@
 </nav>
 
 @code {
+
     string websiteUrl = "#";
     string userDisplayName = "";
+
+
+    /// <summary>
+    ///
+    /// </summary>
     protected override async Task OnInitializedAsync()
     {
         //subscribe to OnMessage event. It is used when another components need to send a message to this component
@@ -71,11 +83,22 @@
 
         websiteUrl = Configuration["Url:Website"];
 
-        var user = await LocalStorageService.GetItemAsync<AuthenticatedUserModel>(MagicKey.Authenticated_User);
-        if (user != null)
-            userDisplayName = user.DisplayName;
+        await GetAndSetUserDisplayName();
+
+
 
         await base.OnInitializedAsync();
+    }
+
+
+
+    /// <summary>
+    ///
+    /// </summary>
+    private async Task BeginSignOut(MouseEventArgs args)
+    {
+        await SignOutManager.SetSignOutState();
+        Navigation.NavigateTo("authentication/logout");
     }
 
 
@@ -87,14 +110,12 @@
     {
         try
         {
-            if ( ReloadDataHelper.NavMenu_Need_Reload(messageType))
+            if (ReloadDataHelper.NavMenu_Need_Reload(messageType))
             {
-                var ownerResult = await OwnerApiService.Get();
+                var ownerResult = await OwnerApiService.GetAsync();
                 if (ownerResult.IsSuccess)
                 {
-                    await UpdateAuthenticatedUserInLocalStorage(ownerResult.Value);
-
-                    userDisplayName = ownerResult.Value.DisplayName;
+                    await GetAndSetUserDisplayName();
                     StateHasChanged();
                 }
             }
@@ -110,13 +131,13 @@
     /// <summary>
     ///
     /// </summary>
-    private async Task UpdateAuthenticatedUserInLocalStorage(OwnerBasicInfoDto user)
+    private async Task GetAndSetUserDisplayName()
     {
-        var authenticatedUser = await LocalStorageService.GetItemAsync<AuthenticatedUserModel>(MagicKey.Authenticated_User);
-        authenticatedUser.DisplayName = user.DisplayName;
-        authenticatedUser.Email = user.Email;
-        await LocalStorageService.SetItemAsync(MagicKey.Authenticated_User, authenticatedUser);
+        var ownerResult = await OwnerApiService.GetAsync();
+        if (ownerResult.IsSuccess)
+            userDisplayName = ownerResult.Value.DisplayName;
     }
+
 
 
     /// <summary>

@@ -1,70 +1,58 @@
-﻿using MediatR;
+﻿using FluentValidation;
+using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using System;
-using TaskoMask.BuildingBlocks.Domain.Events;
+using TaskoMask.BuildingBlocks.Domain.Models;
 
 namespace TaskoMask.BuildingBlocks.Application.Behaviors
 {
     public static class BehaviorsExtensions
     {
 
-        /// <summary>
-        /// 
-        /// </summary>
-        public static IServiceCollection AddValidationBehaviour(this IServiceCollection services)
-        {
-            if (services == null)
-                throw new ArgumentNullException(nameof(services));
-
-            services.AddScoped(typeof(IPipelineBehavior<,>), typeof(ValidationBehaviour<,>));
-
-            return services;
-        }
-
-
 
         /// <summary>
         /// 
         /// </summary>
-        public static IServiceCollection AddEventStoringBehavior(this IServiceCollection services)
+        public static void AddApplicationBehaviors(this IServiceCollection services, Type validatorAssemblyMarkerType)
         {
-            if (services == null)
-                throw new ArgumentNullException(nameof(services));
-
-            services.AddScoped<INotificationHandler<IDomainEvent>, EventStoringBehavior>();
-
-            return services;
-        }
-
-
-        /// <summary>
-        /// 
-        /// </summary>
-        public static IServiceCollection AddCachingBehavior(this IServiceCollection services)
-        {
-            if (services == null)
-                throw new ArgumentNullException(nameof(services));
-
-            services.AddEasyCaching(option=>option.UseInMemory());
-            services.AddScoped(typeof(IPipelineBehavior<,>), typeof(CachingBehavior<,>));
-            return services;
-        }
-
-
-
-        /// <summary>
-        /// 
-        /// </summary>
-        public static IServiceCollection AddApplicationBehaviors(this IServiceCollection services)
-        {
-            if (services == null)
-                throw new ArgumentNullException(nameof(services));
-
-            services.AddValidationBehaviour();
+            services.AddValidationBehaviour(validatorAssemblyMarkerType);
             services.AddCachingBehavior();
             services.AddEventStoringBehavior();
-
-            return services;
         }
+
+
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public static void AddValidationBehaviour(this IServiceCollection services, Type validatorAssemblyMarkerType)
+        {
+            //Load all fluent validation to use in ValidationBehaviour
+            services.AddValidatorsFromAssembly(validatorAssemblyMarkerType.Assembly);
+
+            services.AddScoped(typeof(IPipelineBehavior<,>), typeof(ValidationBehaviour<,>));
+        }
+
+
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public static void AddEventStoringBehavior(this IServiceCollection services)
+        {
+            services.AddScoped<INotificationHandler<DomainEvent>, EventStoringBehavior>();
+        }
+
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public static void AddCachingBehavior(this IServiceCollection services)
+        {
+            services.AddEasyCaching(option=>option.UseInMemory());
+            services.AddScoped(typeof(IPipelineBehavior<,>), typeof(CachingBehavior<,>));
+        }
+
+
     }
 }

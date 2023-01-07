@@ -1,17 +1,15 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using TaskoMask.Services.Monolith.Application.Workspace.Comments.Services;
-using TaskoMask.BuildingBlocks.Contracts.Dtos.Workspace.Comments;
-using Microsoft.AspNetCore.Authorization;
+using TaskoMask.BuildingBlocks.Contracts.Dtos.Comments;
 using TaskoMask.BuildingBlocks.Web.MVC.Controllers;
 using TaskoMask.BuildingBlocks.Contracts.Helpers;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using TaskoMask.BuildingBlocks.Web.ApiContracts;
 using TaskoMask.Services.Monolith.Application.Core.Services;
+using Microsoft.AspNetCore.Authorization;
 
-namespace TaskoMask.Services.Monolith.API.Controllers
+namespace TaskoMask.Services.Monolith.Api.Controllers
 {
-    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-    public class CommentsApiController : BaseApiController, ICommentApiService
+    [Authorize("full-access")]
+    public class CommentsApiController : BaseApiController
     {
         #region Fields
 
@@ -40,7 +38,7 @@ namespace TaskoMask.Services.Monolith.API.Controllers
         /// </summary>
         [HttpGet]
         [Route("comments/{id}")]
-        public async Task<Result<CommentBasicInfoDto>> Get(string id)
+        public async Task<Result<GetCommentDto>> Get(string id)
         {
             return await _commentService.GetByIdAsync(id);
         }

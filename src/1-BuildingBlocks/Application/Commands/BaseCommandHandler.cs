@@ -1,7 +1,8 @@
 ﻿using System.Threading.Tasks;
 using System.Collections.Generic;
-using TaskoMask.BuildingBlocks.Domain.Events;
 using TaskoMask.BuildingBlocks.Application.Bus;
+using TaskoMask.BuildingBlocks.Domain.Models;
+using TaskoMask.BuildingBlocks.Contracts.Models;
 
 namespace TaskoMask.BuildingBlocks.Application.Commands
 {
@@ -13,6 +14,7 @@ namespace TaskoMask.BuildingBlocks.Application.Commands
         #region Fields
 
 
+        private readonly IMessageBus _messageBus;
         private readonly IInMemoryBus _inMemoryBus;
 
 
@@ -21,8 +23,9 @@ namespace TaskoMask.BuildingBlocks.Application.Commands
         #region Ctors
 
 
-        protected BaseCommandHandler(IInMemoryBus inMemoryBus)
+        protected BaseCommandHandler(IMessageBus messageBus, IInMemoryBus inMemoryBus)
         {
+            _messageBus = messageBus;
             _inMemoryBus = inMemoryBus;
         }
 
@@ -34,12 +37,35 @@ namespace TaskoMask.BuildingBlocks.Application.Commands
 
 
         /// <summary>
-        /// publish domain events
+        /// publish domain events (in-process)
         /// </summary>
-        protected async Task PublishDomainEventsAsync(IReadOnlyCollection<IDomainEvent> domainEvents)
+        protected async Task PublishDomainEventsAsync(IReadOnlyCollection<DomainEvent> domainEvents)
         {
             foreach (var domainEvent in domainEvents)
-                await _inMemoryBus.Publish(domainEvent);
+                await PublishDomainEventsAsync(domainEvent);
+        }
+
+
+
+
+        /// <summary>
+        /// publish domain events (in-process)
+        /// </summary>
+        protected async Task PublishDomainEventsAsync(DomainEvent domainEvent)
+        {
+            await _inMemoryBus.PublishEvent(domainEvent);
+        }
+
+
+
+
+
+        /// <summary>
+        /// publish integration events (out-process)
+        /// </summary>
+        protected async Task PublishIntegrationEventAsync<TEvent>(TEvent @event) where TEvent : IntegrationEvent
+        {
+            await _messageBus.Publish(@event);
         }
 
 
