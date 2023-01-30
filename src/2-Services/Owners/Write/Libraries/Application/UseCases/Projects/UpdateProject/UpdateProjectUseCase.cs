@@ -48,7 +48,7 @@ namespace TaskoMask.Services.Owners.Write.Application.UseCases.Projects.UpdatePr
         {
             var owner = await _ownerAggregateRepository.GetByProjectIdAsync(request.Id);
             if (owner == null)
-                throw new ApplicationException(ContractsMessages.Data_Not_exist, DomainMetadata.Owner);
+                throw new ApplicationException(ContractsMessages.Data_Not_exist, DomainMetadata.Project);
 
             var loadedVersion = owner.Version;
 
@@ -62,7 +62,7 @@ namespace TaskoMask.Services.Owners.Write.Application.UseCases.Projects.UpdatePr
 
             await PublishIntegrationEventAsync(projectUpdated);
 
-            return new CommandResult(ContractsMessages.Update_Success, request.Id);
+            return CommandResult.Create(ContractsMessages.Update_Success, request.Id);
         }
 
         #endregion

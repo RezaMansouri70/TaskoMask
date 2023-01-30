@@ -39,3 +39,30 @@ message GetBoardGrpcResponse {
 	string projectId = 8;
 	string projectName = 9;
 }
+
+message GetTaskGrpcResponse {
+
+	CreationTimeGrpcResponse creationTime=1;
+	string id = 2;
+	string title = 3;
+	string description = 4;
+	string cardId = 5;
+	string cardName = 6;
+	string organizationId = 7;
+	string projectId = 8;
+	string boardId = 9;
+}
+
+message GetCardGrpcResponse {
+
+	CreationTimeGrpcResponse creationTime=1;
+	string id = 2;
+	string name = 3;
+	int32 type = 4;
+	string boardId = 5;
+	string projectId = 6;
+	string organizationId = 7;
+	string ownerId = 8;
+}
+
+

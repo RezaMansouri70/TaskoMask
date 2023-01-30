@@ -56,8 +56,7 @@ namespace TaskoMask.ApiGateways.UserPanel.Aggregator.Features.GetOrganizationsBy
                     Organization = MapToOrganization(currentOrganizationGrpcResponse),
                     Projects = await GetProjectsAsync(currentOrganizationGrpcResponse.Id),
                     Boards = await GetBoardsAsync(currentOrganizationGrpcResponse.Id),
-                    //TODO get other details here
-                    //Reports = ... ,
+                    //Will be done by issue #143
                     Reports = new OrganizationReportDto(),
                 });
             }
@@ -107,7 +106,7 @@ namespace TaskoMask.ApiGateways.UserPanel.Aggregator.Features.GetOrganizationsBy
         private async Task<IEnumerable<GetBoardDto>> GetBoardsAsync(string organizationId)
         {
             var boards = new List<GetBoardDto>();
-            var boardsGrpcCall = _getBoardsByOrganizationIdGrpcServiceClient.Handle(new GetBoardsByOrganizationIdGrpcRequest { ProjectId = organizationId });
+            var boardsGrpcCall = _getBoardsByOrganizationIdGrpcServiceClient.Handle(new GetBoardsByOrganizationIdGrpcRequest { OrganizationId = organizationId });
 
             await foreach (var response in boardsGrpcCall.ResponseStream.ReadAllAsync())
                 boards.Add(_mapper.Map<GetBoardDto>(response));

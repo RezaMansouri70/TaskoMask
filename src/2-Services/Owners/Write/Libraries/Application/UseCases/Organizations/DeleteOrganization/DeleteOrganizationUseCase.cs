@@ -47,7 +47,7 @@ namespace TaskoMask.Services.Owners.Write.Application.UseCases.Organizations.Del
         {
             var owner = await _ownerAggregateRepository.GetByOrganizationIdAsync(request.Id);
             if (owner == null)
-                throw new ApplicationException(ContractsMessages.Data_Not_exist, DomainMetadata.Owner);
+                throw new ApplicationException(ContractsMessages.Data_Not_exist, DomainMetadata.Organization);
 
             var loadedVersion = owner.Version;
 
@@ -61,7 +61,7 @@ namespace TaskoMask.Services.Owners.Write.Application.UseCases.Organizations.Del
 
             await PublishIntegrationEventAsync(organizationDeleted);
 
-            return new CommandResult(ContractsMessages.Update_Success, request.Id);
+            return CommandResult.Create(ContractsMessages.Update_Success, request.Id);
         }
 
         #endregion
